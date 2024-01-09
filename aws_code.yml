@@ -1,0 +1,120 @@
+Parameters:
+  AMI:
+    Type: String
+    Description: Our own AMI
+    Default: ami-0d3f444bc76de0a79
+  InstanceType:
+    Type: String
+    Description: Our own instance type
+    Default: t2.micro
+  Key:
+    Type: String
+    Description: Our own key
+    
+
+
+Resources:
+  VPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: 10.0.0.0/16
+        EnableDnsSupport: 'true'
+        EnableDnsHostnames: 'true'
+        Tags:
+        - Key: Name
+          Value: MY VPC CF
+
+  InternetGateway:
+      Type: AWS::EC2::InternetGateway
+      Properties:
+        Tags:
+        - Key: Name
+          Value: MY IG CF
+
+  VPCGatewayAttachment:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId:
+          Ref: VPC
+        InternetGatewayId:
+          Ref: InternetGateway
+
+  SubnetA:
+     Type: AWS::EC2::Subnet
+     Properties:
+      VpcId:
+        Ref: VPC
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: "us-east-1a"
+      Tags:
+      - Key: Name
+        Value: mysubnetA
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:  
+        Ref: VPC
+      Tags:
+      - Key: Name
+        Value: MY RT CF
+
+  InternateRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternateGateway
+    Properties:
+      RouteTableId:
+        Ref: RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: InternetGateway
+
+  SubnetRouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId:
+          Ref: SubnetA
+        RouteTableId:
+          Ref: RouteTable
+
+  MyEC2Instance: 
+      Type: AWS::EC2::Instance
+      Properties: 
+        ImageId: !Ref AMI
+        InstanceType: !Ref InstanceType
+        KeyName: !Ref KeyName
+        SubnetId: !Ref SubnetA
+        SecurityGroups: 
+        - Ref: InstanceSecurityGroup
+        Tags:
+        - Key: Name
+          Value: MY OS CF
+        - Key: Env
+          Value: Dev
+        - Key: Author
+          Value: Umang
+    
+  MyEIP:
+      Type: AWS::EC2::EIP
+      Properties:
+        InstanceId: !Ref MyEC2Instance
+
+  InstanceSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      DependsOn: VPC
+      Properties:
+        GroupDescription: SG for allowing http
+        VpcId: !Ref VPC
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 80
+            ToPort: 80
+            CidrIp: 0.0.0.0/0
+        SecurityGroupEgress:
+          - IpProtocol: -1
+            CidrIp: 0.0.0.0/0 
+        Tags:
+        - Key: Name
+          Value: MY SG CF
+
+        
