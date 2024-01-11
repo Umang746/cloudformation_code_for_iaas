@@ -2,8 +2,7 @@
 
 ## Overview
 
-This repository contains Infrastructure as Code (IaC) templates using AWS CloudFormation to deploy and manage infrastructure components for an AWS CloudFront setup. AWS CloudFront is a content delivery network (CDN) service that securely delivers data, videos, applications, and APIs to customers globally.
-
+This repository contains Infrastructure as Code (IaC) templates using AWS CloudFormation to deploy and manage infrastructure components for an AWS CloudFront setup.
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
