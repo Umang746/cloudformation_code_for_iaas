@@ -12,8 +12,7 @@ This repository contains an Infrastructure as Code (IaC) template using AWS Clou
 - [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Example](#example)
-- [Contributing](#contributing)
-- [License](#license)
+
 
 ## Overview
 
